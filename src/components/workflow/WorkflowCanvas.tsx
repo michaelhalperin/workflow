@@ -951,12 +951,6 @@ const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
           </button>
           <button
             className="rounded-md border border-neutral-300 bg-white px-3 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
-            onClick={handleClear}
-          >
-            Clear All
-          </button>
-          <button
-            className="rounded-md border border-neutral-300 bg-white px-3 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
             onClick={handleResetView}
           >
             Reset View
