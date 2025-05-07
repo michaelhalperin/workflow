@@ -39,6 +39,8 @@ const WorkflowNodeForm: React.FC<WorkflowNodeFormProps> = ({
   const [borderColor, setBorderColor] = useState("");
   const [textColor, setTextColor] = useState("");
   const [showIcon, setShowIcon] = useState(true);
+  const [tooltipText, setTooltipText] = useState("");
+  const [tooltipAlwaysVisible, setTooltipAlwaysVisible] = useState(false);
   const [errors, setErrors] = useState<{ title?: string }>({});
 
   // Initialize form with node data when editing
@@ -54,6 +56,8 @@ const WorkflowNodeForm: React.FC<WorkflowNodeFormProps> = ({
       setBorderColor(node.data?.borderColor || "");
       setTextColor(node.data?.textColor || "");
       setShowIcon(node.data?.showIcon !== false);
+      setTooltipText(node.tooltip?.text || "");
+      setTooltipAlwaysVisible(node.tooltip?.alwaysVisible || false);
     } else {
       // Default values for a new node
       setTitle("");
@@ -64,6 +68,8 @@ const WorkflowNodeForm: React.FC<WorkflowNodeFormProps> = ({
       setBorderColor("");
       setTextColor("");
       setShowIcon(true);
+      setTooltipText("");
+      setTooltipAlwaysVisible(false);
     }
   }, [node, isOpen]);
 
@@ -89,6 +95,10 @@ const WorkflowNodeForm: React.FC<WorkflowNodeFormProps> = ({
         ...(textColor ? { textColor } : {}),
         ...(node?.data ? node.data : {}), // Preserve other data properties
       },
+      tooltip: tooltipText.trim() ? {
+        text: tooltipText.trim(),
+        alwaysVisible: tooltipAlwaysVisible
+      } : undefined
     };
 
     // Submit
@@ -184,6 +194,28 @@ const WorkflowNodeForm: React.FC<WorkflowNodeFormProps> = ({
               fullWidth
               rows={2}
             />
+
+            {/* Tooltip section */}
+            <div className="mb-4">
+              <TextField
+                label="Tooltip Text (optional)"
+                value={tooltipText}
+                onChange={(e) => setTooltipText(e.target.value)}
+                placeholder="Enter tooltip text"
+                fullWidth
+              />
+              <div className="mt-2">
+                <label className="flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={tooltipAlwaysVisible}
+                    onChange={(e) => setTooltipAlwaysVisible(e.target.checked)}
+                    className="h-4 w-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
+                  />
+                  <span className="font-medium text-neutral-700">Always show tooltip</span>
+                </label>
+              </div>
+            </div>
 
             {/* Node shape selection */}
             <div className="mb-2">

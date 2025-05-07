@@ -17,6 +17,10 @@ export interface WorkflowNode {
   height?: number;
   style?: CSSProperties;
   data?: Record<string, any>; // Additional data for future extension
+  tooltip?: {
+    text: string;
+    alwaysVisible?: boolean;
+  };
 }
 
 // Connection interface representing a directed edge between nodes
@@ -28,6 +32,10 @@ export interface NodeConnection {
   style?: 'straight' | 'bezier' | 'step';
   animated?: boolean;
   color?: string;
+  tooltip?: {
+    text: string;
+    alwaysVisible?: boolean;
+  };
 }
 
 // Workflow interface representing the entire workflow

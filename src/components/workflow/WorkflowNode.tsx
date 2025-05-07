@@ -199,6 +199,7 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({
   const [dragStartPos, setDragStartPos] = useState<Position>({ x: 0, y: 0 });
   const [nodeStartPos, setNodeStartPos] = useState<Position>(node.position);
   const [isResizing, setIsResizing] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   // --- Resize logic ---
   // Track which handle is being dragged and the initial mouse/node state
@@ -491,7 +492,19 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({
       onDoubleClick={() => {
         if (typeof onDoubleClick === "function") onDoubleClick(node.id);
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Tooltip */}
+      {node.tooltip?.text && (isHovered || node.tooltip.alwaysVisible) && (
+        <div
+          className="absolute left-1/2 -translate-x-1/2 -top-8 px-2 py-1 bg-black bg-opacity-80 text-white text-xs rounded whitespace-nowrap pointer-events-none"
+          style={{ zIndex: 20 }}
+        >
+          {node.tooltip.text}
+        </div>
+      )}
+
       {/* Node with image background if specified */}
       {nodeImage && (
         <div

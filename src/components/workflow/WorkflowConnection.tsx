@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NodeConnection, WorkflowNode } from "../../types/workflow";
 
 interface WorkflowConnectionProps {
@@ -24,9 +24,32 @@ const WorkflowConnection: React.FC<WorkflowConnectionProps> = ({
   connectionPoints,
 }) => {
   const { sourceX, sourceY, targetX, targetY } = connectionPoints;
-
-  // Track hover state
   const [isHovered, setIsHovered] = useState(false);
+  const [labelWidth, setLabelWidth] = useState(140);
+  const [labelHeight, setLabelHeight] = useState(40);
+  const [textHeight, setTextHeight] = useState(30);
+
+  // Calculate label dimensions based on text length
+  useEffect(() => {
+    if (connection.label) {
+      // Width calculation
+      const charWidth = 8;
+      const minWidth = 140;
+      const maxWidth = 300;
+      const calculatedWidth = Math.min(
+        Math.max(connection.label.length * charWidth, minWidth),
+        maxWidth
+      );
+      setLabelWidth(calculatedWidth);
+
+      // Height calculation
+      const lineHeight = 16; // 12px font * 1.3 line height
+      const lines = Math.ceil(connection.label.length * charWidth / (calculatedWidth - 20));
+      const calculatedHeight = Math.min(Math.max(lines * lineHeight + 16, 40), 80);
+      setLabelHeight(calculatedHeight);
+      setTextHeight(calculatedHeight - 10);
+    }
+  }, [connection.label]);
 
   // Calculate control points for a Bezier curve
   const generatePath = () => {
@@ -114,25 +137,46 @@ const WorkflowConnection: React.FC<WorkflowConnectionProps> = ({
       {/* Connection label (if any) */}
       {connection.label && (
         <g>
+          {/* Background with padding */}
           <rect
-            x={(sourceX + targetX) / 2 - 25}
-            y={(sourceY + targetY) / 2 - 10}
-            width="50"
-            height="20"
-            rx="4"
+            x={(sourceX + targetX) / 2 - labelWidth / 2}
+            y={(sourceY + targetY) / 2 - labelHeight / 2}
+            width={labelWidth}
+            height={labelHeight}
+            rx="8"
             fill="white"
             stroke={connectionColor}
-            strokeWidth="1"
+            strokeWidth="1.5"
+            filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
           />
-          <text
-            x={(sourceX + targetX) / 2}
-            y={(sourceY + targetY) / 2 + 5}
-            textAnchor="middle"
-            fontSize="10"
-            fill="#374151"
+          {/* Label text with word wrapping */}
+          <foreignObject
+            x={(sourceX + targetX) / 2 - labelWidth / 2 + 5}
+            y={(sourceY + targetY) / 2 - textHeight / 2}
+            width={labelWidth - 10}
+            height={textHeight}
+            style={{ overflow: 'hidden' }}
           >
-            {connection.label}
-          </text>
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: '500',
+                color: connectionColor,
+                textAlign: 'center',
+                lineHeight: '1.3',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: Math.ceil(textHeight / 16),
+                WebkitBoxOrient: 'vertical',
+                userSelect: 'none',
+                padding: '2px 4px',
+                wordBreak: 'break-word'
+              }}
+            >
+              {connection.label}
+            </div>
+          </foreignObject>
         </g>
       )}
 
